@@ -5,62 +5,37 @@
   <title>Zoro Scans</title>
   <style>
     body {
-      font-family: "Georgia", serif;
+      font-family: Arial, sans-serif;
+      text-align: center;
       background-color: #111;
       color: #eee;
-      text-align: center;
-      padding-top: 100px;
+      margin: 0;
+      padding: 50px;
     }
     h1 {
-      font-size: 40px;
+      font-size: 2.5em;
       margin-bottom: 10px;
     }
     p {
-      font-size: 18px;
-      color: #aaa;
-      margin-bottom: 40px;
-    }
-    #searchArea {
       margin-bottom: 20px;
     }
     input {
-      padding: 12px;
-      width: 300px;
+      padding: 10px;
       font-size: 16px;
-      border: 2px solid #555;
-      border-radius: 8px;
-      outline: none;
-    }
-    input:focus {
-      border-color: #6cf;
+      width: 250px;
     }
     button {
-      padding: 12px 20px;
+      padding: 10px 15px;
       font-size: 16px;
-      margin-left: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #6cf;
       cursor: pointer;
-      transition: 0.2s;
+      margin-left: 10px;
     }
-    button:hover {
-      background: #48a;
-    }
-    #message {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #f66;
-    }
-    #unlockedContent {
-      margin-top: 40px;
+    .hidden {
       display: none;
     }
-    #unlockedContent img {
-      max-width: 80%;
-      border: 3px solid #444;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    .warning {
+      color: #f66;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -68,37 +43,59 @@
   <h1>Zoro Scans</h1>
   <p>Archive for all the letters, postcards, report cards, name cards, etc.</p>
 
-  <div id="searchArea">
-    <input type="text" id="passwordInput" placeholder="Search the archive...">
-    <button onclick="checkPassword()">Search</button>
+  <div id="login-section">
+    <input id="password" type="text" placeholder="Enter the name...">
+    <button onclick="checkPassword()">Unlock</button>
+    <p class="warning">⚠️ You only have 3 attempts. After that, you’ll be permanently locked out.</p>
+    <p id="message"></p>
   </div>
-  <p id="message"></p>
 
-  <div id="unlockedContent">
-    <h2>📜 Scan Found</h2>
-    <img src="clue1.png" alt="Unlocked Scan">
+  <div id="content" class="hidden">
+    <h2>Unlocked!</h2>
+    <p>Here’s your first clue:</p>
+    <img src="clue1.png" alt="Clue 1" style="max-width:80%;border:2px solid #fff;">
   </div>
 
   <script>
-    let attempts = 0;
-    const correctPassword = "misook"; // target name
+    const correctPassword = "misook";
+    let attempts = localStorage.getItem("attempts") ? parseInt(localStorage.getItem("attempts")) : 0;
+    let unlocked = localStorage.getItem("unlocked") === "true";
 
     function checkPassword() {
-      let input = document.getElementById("passwordInput").value.trim().toLowerCase();
-      attempts++;
-
-      if (input === correctPassword) {
-        document.getElementById("message").style.color = "lightgreen";
-        document.getElementById("message").innerHTML = "✅ Match found in archive.";
-        document.getElementById("unlockedContent").style.display = "block";
-        document.getElementById("searchArea").style.display = "none"; // hide search box
-      } else if (attempts >= 3) {
-        document.getElementById("message").innerHTML = "❌ Access locked. Too many failed searches.";
-        document.getElementById("passwordInput").disabled = true;
-      } else {
-        document.getElementById("message").innerHTML = 
-          "No results found. Attempts left: " + (3 - attempts);
+      if (unlocked) {
+        document.getElementById("login-section").classList.add("hidden");
+        document.getElementById("content").classList.remove("hidden");
+        return;
       }
+
+      if (attempts >= 3) {
+        document.getElementById("message").innerText = "❌ You are permanently locked out.";
+        return;
+      }
+
+      let input = document.getElementById("password").value.toLowerCase();
+      if (input === correctPassword) {
+        unlocked = true;
+        localStorage.setItem("unlocked", "true");
+        document.getElementById("login-section").classList.add("hidden");
+        document.getElementById("content").classList.remove("hidden");
+      } else {
+        attempts++;
+        localStorage.setItem("attempts", attempts);
+        if (attempts >= 3) {
+          document.getElementById("message").innerText = "❌ You are permanently locked out.";
+        } else {
+          document.getElementById("message").innerText = `Incorrect. Attempts left: ${3 - attempts}`;
+        }
+      }
+    }
+
+    // Auto-show content if already unlocked
+    if (unlocked) {
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("content").classList.remove("hidden");
+    } else if (attempts >= 3) {
+      document.getElementById("message").innerText = "❌ You are permanently locked out.";
     }
   </script>
 </body>
