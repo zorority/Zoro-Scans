@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zoro Scans</title>
+  <style>
+    body {
+      font-family: "Georgia", serif;
+      background-color: #111;
+      color: #eee;
+      text-align: center;
+      padding-top: 100px;
+    }
+    h1 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 18px;
+      color: #aaa;
+      margin-bottom: 40px;
+    }
+    #searchArea {
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 12px;
+      width: 300px;
+      font-size: 16px;
+      border: 2px solid #555;
+      border-radius: 8px;
+      outline: none;
+    }
+    input:focus {
+      border-color: #6cf;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #6cf;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #48a;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #f66;
+    }
+    #unlockedContent {
+      margin-top: 40px;
+      display: none;
+    }
+    #unlockedContent img {
+      max-width: 80%;
+      border: 3px solid #444;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>Zoro Scans</h1>
+  <p>Archive for all the letters, postcards, report cards, name cards, etc.</p>
+
+  <div id="searchArea">
+    <input type="text" id="passwordInput" placeholder="Search the archive...">
+    <button onclick="checkPassword()">Search</button>
+  </div>
+  <p id="message"></p>
+
+  <div id="unlockedContent">
+    <h2>📜 Scan Found</h2>
+    <img src="clue1.png" alt="Unlocked Scan">
+  </div>
+
+  <script>
+    let attempts = 0;
+    const correctPassword = "misook"; // target name
+
+    function checkPassword() {
+      let input = document.getElementById("passwordInput").value.trim().toLowerCase();
+      attempts++;
+
+      if (input === correctPassword) {
+        document.getElementById("message").style.color = "lightgreen";
+        document.getElementById("message").innerHTML = "✅ Match found in archive.";
+        document.getElementById("unlockedContent").style.display = "block";
+        document.getElementById("searchArea").style.display = "none"; // hide search box
+      } else if (attempts >= 3) {
+        document.getElementById("message").innerHTML = "❌ Access locked. Too many failed searches.";
+        document.getElementById("passwordInput").disabled = true;
+      } else {
+        document.getElementById("message").innerHTML = 
+          "No results found. Attempts left: " + (3 - attempts);
+      }
+    }
+  </script>
+</body>
+</html>
